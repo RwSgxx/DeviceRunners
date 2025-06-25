@@ -11,11 +11,19 @@ public static class AppHostBuilderExtensions
 	// default to true as it is always supported
 	internal static bool IsUsingVisualRunner { get; set; } = true;
 
-	public static MauiAppBuilder UseVisualTestRunner(this MauiAppBuilder appHostBuilder, Action<VisualTestRunnerConfigurationBuilder> configurationBuilder)
+	public static MauiAppBuilder UseVisualTestRunner(
+		this MauiAppBuilder appHostBuilder, 
+		Action<VisualTestRunnerConfigurationBuilder> configurationBuilder,
+		IReadOnlyCollection<ResourceDictionary>? externalAppResources = null)
 	{
 		var configBuilder = new VisualTestRunnerConfigurationBuilder(appHostBuilder);
 		configurationBuilder?.Invoke(configBuilder);
 		var configuration = configBuilder.Build();
+
+		if (externalAppResources != null)
+		{
+			appHostBuilder.Services.AddSingleton<IExternalAppResourcesProvider>(new ExternalAppResourcesProvider(externalAppResources));
+		}
 
 		// register runner components
 		appHostBuilder.Services.AddSingleton<IVisualTestRunnerConfiguration>(configuration);

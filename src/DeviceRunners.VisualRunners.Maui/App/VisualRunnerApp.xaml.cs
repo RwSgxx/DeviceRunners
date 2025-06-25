@@ -2,9 +2,19 @@
 
 partial class VisualRunnerApp : Application
 {
-	public VisualRunnerApp()
+	public VisualRunnerApp(IExternalAppResourcesProvider? externalAppResourcesProvider = null)
 	{
 		InitializeComponent();
+
+		if (externalAppResourcesProvider == null)
+		{
+			return;
+		}
+
+		foreach (var externalAppResource in externalAppResourcesProvider.ExternalAppResources)
+		{
+			Resources.MergedDictionaries.Add(externalAppResource);
+		}
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
